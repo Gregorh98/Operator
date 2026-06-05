@@ -6,5 +6,5 @@ class Dial:
         self._dial_enable_pin = dial_enable_pin
         self._dial_pulse_pin = dial_pulse_pin
 
-        self._dial_enable_switch = Button(self._dial_enable_pin, pull_up=True)
-        self._dial_pulse_switch = Button(self._dial_pulse_pin, pull_up=True)
+        self._dial_enable_switch = Button(self._dial_enable_pin, pull_up=True, bounce_time=0.05)
+        self._dial_pulse_switch = Button(self._dial_pulse_pin, pull_up=True, bounce_time=0.05)
