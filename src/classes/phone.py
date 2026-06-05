@@ -11,15 +11,14 @@ class Phone:
         self._ringer = Ringer(ringer_coil_pos_pin, ringer_coil_neg_pin)
         self._dial = Dial(dial_enable_pin, dial_pulse_pin)
 
-        self._hook_switch.when_activated = self._phone_placed()
+        self._hook_switch.when_pressed = self._phone_lifted
+        self._hook_switch.when_released = self._phone_placed
 
     def _phone_placed(self):
         print("Phone Placed")
-        return None
 
     def _phone_lifted(self):
         print("Phone Lifted")
-        return None
 
     def ring(self, count=1):
         for x in range(count):
