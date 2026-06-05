@@ -11,8 +11,8 @@ class Phone:
         self._ringer = Ringer(ringer_coil_pos_pin, ringer_coil_neg_pin)
         self._dial = Dial(dial_enable_pin, dial_pulse_pin)
 
-        self._hook_switch.when_pressed = self._phone_lifted
-        self._hook_switch.when_released = self._phone_placed
+        self._hook_switch.when_pressed = self._phone_placed
+        self._hook_switch.when_released = self._phone_lifted
 
     def _phone_placed(self):
         print("Phone Placed")
