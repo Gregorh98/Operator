@@ -31,3 +31,8 @@ class Ringer:
             self._strike()
         self._off()
 
+    def ring_sequence(self):
+        self.ring()
+        sleep(0.5)
+        self.ring()
+        sleep(4)

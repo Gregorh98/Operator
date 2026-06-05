@@ -13,6 +13,6 @@ class Phone:
 
     def ring(self, count=1):
         for x in range(count):
-            self._ringer.ring()
+            self._ringer.ring_sequence()
 
 
