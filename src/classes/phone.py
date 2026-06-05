@@ -21,7 +21,8 @@ class Phone:
         print("Phone Lifted")
 
     def _number_dialed(self, number):
-        self.ring(number)
+        for x in range(number):
+            self._ringer.ring_burst()
 
     def ring(self, count=1):
         for x in range(count):
