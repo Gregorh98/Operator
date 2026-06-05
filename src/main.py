@@ -1,13 +1,11 @@
-from gpiozero import DigitalOutputDevice, Button
+from classes import Phone
 
-class Phone():
-    def __init__(self, hook_switch_pin, ringer_coil_pos_pin, ringer_coil_neg_pin, dial_enable_pin, dial_pulse_pin):
-        self._hook_switch_pin = hook_switch_pin
-        self._ringer_coil_pos_pin = ringer_coil_pos_pin
-        self._ringer_coil_neg_pin = ringer_coil_neg_pin
-        self._dial_enable_pin = dial_enable_pin
-        self._dial_pulse_pin = dial_pulse_pin
+HOOK_SWITCH_PIN = 4
+RINGER_COIL_POS_PIN = 2
+RINGER_COIL_NEG_PIN = 3
+DIAL_ENABLE_PIN = 22
+DIAL_PULSE_PIN = 27
 
-        self._hook_switch = Button(self._hook_switch_pin, pull_up=True)
-
-        
+if __name__ == "__main__":
+    phone = Phone(HOOK_SWITCH_PIN, RINGER_COIL_POS_PIN, RINGER_COIL_NEG_PIN, DIAL_ENABLE_PIN, DIAL_PULSE_PIN)
+    phone.ring()
