@@ -3,7 +3,7 @@ from gpiozero import Button
 from classes import Ringer, Dial
 
 
-class Phone():
+class Phone:
     def __init__(self, hook_switch_pin, ringer_coil_pos_pin, ringer_coil_neg_pin, dial_enable_pin, dial_pulse_pin):
         self._hook_switch_pin = hook_switch_pin
         self._hook_switch = Button(self._hook_switch_pin, pull_up=True)
