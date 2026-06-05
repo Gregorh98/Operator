@@ -9,7 +9,7 @@ class Phone:
         self._hook_switch = Button(self._hook_switch_pin, pull_up=True, bounce_time=0.05)
 
         self._ringer = Ringer(ringer_coil_pos_pin, ringer_coil_neg_pin)
-        self._dial = Dial(dial_enable_pin, dial_pulse_pin)
+        self._dial = Dial(dial_enable_pin, dial_pulse_pin, self._number_dialed)
 
         self._hook_switch.when_pressed = self._phone_placed
         self._hook_switch.when_released = self._phone_lifted
@@ -19,6 +19,9 @@ class Phone:
 
     def _phone_lifted(self):
         print("Phone Lifted")
+
+    def _number_dialed(self, number):
+        self.ring(number)
 
     def ring(self, count=1):
         for x in range(count):
