@@ -15,11 +15,11 @@ class Phone:
 
     def _phone_placed(self):
         print("Phone Placed")
-        return 0
+        return None
 
     def _phone_lifted(self):
         print("Phone Lifted")
-        return 0
+        return None
 
     def ring(self, count=1):
         for x in range(count):
