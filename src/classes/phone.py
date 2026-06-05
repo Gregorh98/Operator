@@ -1,3 +1,5 @@
+from time import sleep
+
 from gpiozero import Button
 
 from classes import Ringer, Dial
@@ -23,6 +25,7 @@ class Phone:
     def _number_dialed(self, number):
         for x in range(number):
             self._ringer.ring_burst()
+            sleep(0.1)
 
     def ring(self, count=1):
         for x in range(count):
