@@ -26,13 +26,13 @@ class Ringer:
         self._ringer_coil_pos.on()
         sleep(0.020)
 
-    def ring(self):
+    def ring_burst(self):
         for _ in range(15):
             self._strike()
         self._off()
 
     def ring_sequence(self):
-        self.ring()
-        sleep(0.5)
-        self.ring()
+        self.ring_burst()
+        sleep(0.1)
+        self.ring_burst()
         sleep(4)
