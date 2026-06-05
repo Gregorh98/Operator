@@ -1,6 +1,6 @@
 from gpiozero import Button
 
-from src.classes import Ringer, Dial
+from classes import Ringer, Dial
 
 
 class Phone():
