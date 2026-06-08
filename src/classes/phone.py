@@ -25,7 +25,7 @@ class Phone:
         # STT
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
-        sounddevice.RawInputStream(samplerate=16000, blocksize=8000, dtype='int16', channels=1, callback=callback).start()
+        sounddevice.RawInputStream(samplerate=16000, blocksize=8000, dtype='int16', channels=1, callback=self._on_word).start()
 
     def _on_word(self, indata, frames, time, status):
             if self._recognizer.AcceptWaveform(bytes(indata)):
