@@ -40,7 +40,7 @@ class Phone:
         if status:
             print(status)
 
-        if self._recognizer.AcceptWaveform(indata):
+        if self._recognizer.AcceptWaveform(bytes(indata)):
             result = json.loads(self._recognizer.Result())
             print(result["text"])
 
