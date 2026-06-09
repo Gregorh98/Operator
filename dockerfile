@@ -8,6 +8,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     portaudio19-dev \
     libportaudio2 \
+    libatomic1 \
+    libasound2-dev \
+    alsa-utils \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
