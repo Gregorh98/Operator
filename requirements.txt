@@ -2,4 +2,3 @@ lgpio
 sounddevice
 vosk
 gpiozero
-numpy

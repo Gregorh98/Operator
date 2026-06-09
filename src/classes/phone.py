@@ -23,11 +23,10 @@ class Phone:
         # STT
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
-        self._resample_state = None
 
         print(sounddevice.query_devices())
 
-        self._sound_stream = sounddevice.InputStream(
+        self._sound_stream = sounddevice.RawInputStream(
             device=None,
             samplerate=16000,
             blocksize=4000,
