@@ -29,7 +29,7 @@ class Phone:
         self._sound_stream = sounddevice.RawInputStream(
             device=None,
             samplerate=16000,
-            blocksize=4000,
+            blocksize=1600,
             dtype='int16',
             channels=1,
             callback=self._on_word
