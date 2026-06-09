@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Copy project files into container
-COPY . /app
+COPY /src /app
 
 # Install dependencies if you have a requirements file
 RUN pip install --no-cache-dir -r requirements.txt || true
