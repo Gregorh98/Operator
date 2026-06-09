@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     libportaudio2 \
     libatomic1 \
     libasound2-dev \
-    python3-lgpio \
     alsa-utils \
     && rm -rf /var/lib/apt/lists/*
 

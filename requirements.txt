@@ -1,3 +1,4 @@
+lgpio
 sounddevice
 vosk
 gpiozero
