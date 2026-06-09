@@ -25,10 +25,12 @@ class Phone:
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
         self._resample_state = None
 
+        print(sounddevice.query_devices())
+
         self._sound_stream = sounddevice.RawInputStream(
             device=2,
             samplerate=16000,
-            blocksize=8000,
+            blocksize=4000,
             dtype='int16',
             channels=1,
             callback=self._on_word
