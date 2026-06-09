@@ -2,7 +2,6 @@ import json
 from time import sleep
 
 import sounddevice
-import audioop
 from gpiozero import Button
 from vosk import Model, KaldiRecognizer
 
@@ -28,7 +27,7 @@ class Phone:
 
         self._sound_stream = sounddevice.RawInputStream(
             device=2,
-            samplerate=44100,
+            samplerate=16000,
             blocksize=8000,
             dtype='int16',
             channels=1,
@@ -40,10 +39,7 @@ class Phone:
         if status:
             print(status)
 
-        audio_bytes = indata.tobytes()
-        audio_16k, self._resample_state = audioop.ratecv(audio_bytes, 2, 1, 44100, 16000, self._resample_state)
-
-        if self._recognizer.AcceptWaveform(audio_16k):
+        if self._recognizer.AcceptWaveform(indata):
             result = json.loads(self._recognizer.Result())
             print(result["text"])
 
