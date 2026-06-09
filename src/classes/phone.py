@@ -27,8 +27,8 @@ class Phone:
 
         print(sounddevice.query_devices())
 
-        self._sound_stream = sounddevice.RawInputStream(
-            device=2,
+        self._sound_stream = sounddevice.InputStream(
+            device=None,
             samplerate=16000,
             blocksize=4000,
             dtype='int16',

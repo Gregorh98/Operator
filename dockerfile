@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
     alsa-utils \
     && rm -rf /var/lib/apt/lists/*
 
+RUN echo "defaults.pcm.card 2" > /root/.asoundrc && \
+    echo "defaults.pcm.device 0" >> /root/.asoundrc && \
+    echo "defaults.pcm.type plug" >> /root/.asoundrc
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
