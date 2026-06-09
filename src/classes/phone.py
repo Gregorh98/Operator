@@ -2,12 +2,11 @@ import json
 from time import sleep
 
 import sounddevice
+import audioop
 from gpiozero import Button
 from vosk import Model, KaldiRecognizer
 
 from classes import Ringer, Dial
-
-
 
 class Phone:
     def __init__(self, hook_switch_pin, ringer_coil_pos_pin, ringer_coil_neg_pin, dial_enable_pin, dial_pulse_pin):
@@ -25,12 +24,28 @@ class Phone:
         # STT
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
-        sounddevice.RawInputStream(samplerate=16000, blocksize=8000, dtype='int16', channels=1, callback=self._on_word).start()
+        self._resample_state = None
+
+        self._sound_stream = sounddevice.RawInputStream(
+            device=2,
+            samplerate=44100,
+            blocksize=8000,
+            dtype='int16',
+            channels=1,
+            callback=self._on_word
+        )
+        self._sound_stream.start()
 
     def _on_word(self, indata, frames, time, status):
-            if self._recognizer.AcceptWaveform(bytes(indata)):
-                result = json.loads(self._recognizer.Result())
-                print(result["text"])
+        if status:
+            print(status)
+
+        audio_bytes = indata.tobytes()
+        audio_16k, self._resample_state = audioop.ratecv(audio_bytes, 2, 1, 44100, 16000, self._resample_state)
+
+        if self._recognizer.AcceptWaveform(audio_16k):
+            result = json.loads(self._recognizer.Result())
+            print(result["text"])
 
     def _phone_placed(self):
         print("Phone Placed")
