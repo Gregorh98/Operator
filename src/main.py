@@ -2,11 +2,11 @@ from signal import pause
 
 from classes import Phone
 
-HOOK_SWITCH_PIN = 4
-RINGER_COIL_POS_PIN = 2
-RINGER_COIL_NEG_PIN = 3
-DIAL_ENABLE_PIN = 22
-DIAL_PULSE_PIN = 27
+HOOK_SWITCH_PIN = 7
+RINGER_COIL_POS_PIN = 24
+RINGER_COIL_NEG_PIN = 25
+DIAL_ENABLE_PIN = 29
+DIAL_PULSE_PIN = 28
 
 if __name__ == "__main__":
     print("Running")
