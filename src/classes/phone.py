@@ -30,6 +30,9 @@ class Phone:
             callback=self._dial_tone_callback
         )
 
+        if not self._hook_switch.is_pressed:
+            self._start_dial_tone()
+
         # STT
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
@@ -69,6 +72,9 @@ class Phone:
     def _on_word(self, indata, frames, time, status):
         if status:
             print(status)
+
+        if self._hook_switch.is_pressed:
+            return
 
         if self._recognizer.AcceptWaveform(bytes(indata)):
             result = json.loads(self._recognizer.Result())
