@@ -1,6 +1,7 @@
 import json
 from time import sleep
 
+import numpy as np
 import sounddevice
 from gpiozero import Button
 from vosk import Model, KaldiRecognizer
@@ -20,6 +21,15 @@ class Phone:
         self._hook_switch.when_pressed = self._phone_placed
         self._hook_switch.when_released = self._phone_lifted
 
+        # Dial Tone
+        self._dial_tone_phase = 0
+        self._dial_tone_stream = sounddevice.OutputStream(
+            samplerate=8000,
+            channels=1,
+            dtype="float32",
+            callback=self._dial_tone_callback
+        )
+
         # STT
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
@@ -30,11 +40,31 @@ class Phone:
             device=None,
             samplerate=16000,
             blocksize=8000,
-            dtype='int16',
+            dtype="int16",
             channels=1,
             callback=self._on_word
         )
         self._sound_stream.start()
+
+    def _dial_tone_callback(self, outdata, frames, time, status):
+        if status:
+            print(status)
+
+        t = np.arange(frames) + self._dial_tone_phase
+        tone = 0.3 * np.sin(
+            2 * np.pi * 350 * t / 8000
+        )
+        outdata[:, 0] = tone.astype(np.float32)
+        self._dial_tone_phase += frames
+
+    def _start_dial_tone(self):
+        if not self._dial_tone_stream.active:
+            self._dial_tone_phase = 0
+            self._dial_tone_stream.start()
+
+    def _stop_dial_tone(self):
+        if self._dial_tone_stream.active:
+            self._dial_tone_stream.stop()
 
     def _on_word(self, indata, frames, time, status):
         if status:
@@ -46,15 +76,21 @@ class Phone:
 
     def _phone_placed(self):
         print("Phone Placed")
+        self._stop_dial_tone()
 
     def _phone_lifted(self):
         print("Phone Lifted")
+        self._start_dial_tone()
 
     def _on_number_dialed(self, number):
-        for x in range(number):
+        self._stop_dial_tone()
+
+        for _ in range(number):
             self._ringer.ring_burst()
             sleep(0.1)
 
+        self._start_dial_tone()
+
     def ring(self, count=1):
-        for x in range(count):
+        for _ in range(count):
             self._ringer.ring_sequence()
