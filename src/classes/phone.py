@@ -22,9 +22,12 @@ class Phone:
         self._hook_switch.when_released = self._phone_lifted
 
         # Dial Tone
-        self._dial_tone_phase = 0
+        self._sr_tone = 8000
+        self._phase_350 = 0
+        self._phase_450 = 0
+
         self._dial_tone_stream = sounddevice.OutputStream(
-            samplerate=8000,
+            samplerate=self._sr_tone,
             channels=1,
             dtype="float32",
             callback=self._dial_tone_callback
@@ -53,16 +56,18 @@ class Phone:
         if status:
             print(status)
 
-        t = np.arange(frames) + self._dial_tone_phase
-        tone = 0.3 * np.sin(
-            2 * np.pi * 350 * t / 8000
-        )
-        outdata[:, 0] = tone.astype(np.float32)
-        self._dial_tone_phase += frames
+        t = np.arange(frames)
+
+        tone_350 = np.sin(2 * np.pi * 350 * (t + self._phase_350) / self._sr_tone)
+        tone_450 = np.sin(2 * np.pi * 450 * (t + self._phase_450) / self._sr_tone)
+
+        outdata[:, 0] = 0.25 * (tone_350 + tone_450)
+
+        self._phase_350 += frames
+        self._phase_450 += frames
 
     def _start_dial_tone(self):
         if not self._dial_tone_stream.active:
-            self._dial_tone_phase = 0
             self._dial_tone_stream.start()
 
     def _stop_dial_tone(self):
