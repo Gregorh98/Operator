@@ -5,8 +5,9 @@ from classes import Phone
 HOOK_SWITCH_PIN = 4
 RINGER_COIL_POS_PIN = 19
 RINGER_COIL_NEG_PIN = 26
-DIAL_ENABLE_PIN = 21
-DIAL_PULSE_PIN = 20
+
+DIAL_ENABLE_PIN = 16
+DIAL_PULSE_PIN = 21
 
 if __name__ == "__main__":
     print("Running")
