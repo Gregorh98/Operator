@@ -2,7 +2,7 @@ from signal import pause
 
 from classes import Phone
 
-HOOK_SWITCH_PIN = 4
+HOOK_SWITCH_PIN = 12
 RINGER_COIL_POS_PIN = 19
 RINGER_COIL_NEG_PIN = 26
 
