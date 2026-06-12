@@ -57,15 +57,20 @@ class Phone:
         if status:
             print(status)
 
-        t = np.arange(frames)
+        sr = self._sr_tone
 
-        tone_350 = np.sin(2 * np.pi * 350 * (t + self._phase_350) / self._sr_tone)
-        tone_450 = np.sin(2 * np.pi * 450 * (t + self._phase_450) / self._sr_tone)
+        # generate sample indices once (fast)
+        t = np.arange(frames, dtype=np.float32)
 
-        outdata[:, 0] = 0.25 * (tone_350 + tone_450)
+        # compute phase increments
+        phase_350 = (self._phase_350 + t) * 2 * np.pi * 350 / sr
+        phase_450 = (self._phase_450 + t) * 2 * np.pi * 450 / sr
 
-        self._phase_350 += frames
-        self._phase_450 += frames
+        outdata[:, 0] = 0.25 * (np.sin(phase_350) + np.sin(phase_450))
+
+        # update phase safely
+        self._phase_350 = (self._phase_350 + frames) % sr
+        self._phase_450 = (self._phase_450 + frames) % sr
 
     def _start_dial_tone(self):
         if not self._dial_tone_stream.active:
