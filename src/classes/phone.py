@@ -4,6 +4,7 @@ from time import sleep
 import numpy as np
 import sounddevice
 from gpiozero import Button
+from pycparser.c_ast import Switch
 from vosk import Model, KaldiRecognizer
 
 from classes import Ringer, Dial
@@ -96,9 +97,28 @@ class Phone:
     def _on_number_dialed(self, number):
         self._stop_dial_tone()
 
-        for _ in range(number):
-            self._ringer.ring_burst()
-            sleep(0.1)
+        match(number):
+            case 1:
+                return
+            case 2:
+                return
+            case 3:
+                return
+            case 4:
+                return
+            case 5:
+                return
+            case 6:
+                return
+            case 7:
+                return
+            case 8:
+                return
+            case 9:
+                return
+            case 0:
+                self._ringer.ring_sequence()
+                return
 
         self._start_dial_tone()
 
