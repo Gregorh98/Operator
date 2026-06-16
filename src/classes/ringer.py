@@ -1,5 +1,7 @@
+import logging
 from time import sleep
 
+import gpiozero.exc
 from gpiozero import DigitalOutputDevice
 
 
