@@ -41,9 +41,9 @@ class Phone:
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
 
-        self._sound_stream = sounddevice.RawInputStream(
+        self._sound_stream = sounddevice.InputStream(
             device="USB Audio Device",
-            samplerate=16000,
+            samplerate=48000,
             blocksize=8000,
             dtype="int16",
             channels=1,
@@ -78,6 +78,16 @@ class Phone:
         if self._dial_tone_stream.active:
             self._dial_tone_stream.stop()
 
+    def _resample(self, data, src_sr, dst_sr):
+        ratio = dst_sr / src_sr
+        n = int(len(data) * ratio)
+
+        return np.interp(
+            np.linspace(0, len(data), n, endpoint=False),
+            np.arange(len(data)),
+            data
+        ).astype(np.int16)
+
     def _on_word(self, indata, frames, time, status):
         if status:
             print(status)
@@ -85,7 +95,14 @@ class Phone:
         if self._hook_switch.is_pressed:
             return
 
-        if self._recognizer.AcceptWaveform(bytes(indata)):
+        # convert buffer safely
+        audio = np.frombuffer(indata, dtype=np.int16)
+
+        # resample 48k → 16k
+        audio_16k = self._resample(audio, 48000, 16000)
+
+        # feed Vosk
+        if self._recognizer.AcceptWaveform(audio_16k.tobytes()):
             result = json.loads(self._recognizer.Result())
             print(result["text"])
 
