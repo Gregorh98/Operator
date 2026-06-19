@@ -41,10 +41,8 @@ class Phone:
         self._stt_model = Model("vosk_model")
         self._recognizer = KaldiRecognizer(self._stt_model, 16000)
 
-        print(sounddevice.query_devices())
-
         self._sound_stream = sounddevice.RawInputStream(
-            device=None,
+            device="USB Audio Device",
             samplerate=16000,
             blocksize=8000,
             dtype="int16",
