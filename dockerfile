@@ -7,8 +7,6 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     portaudio19-dev \
-    gcc \
-    g++ \
     libportaudio2 \
     libatomic1 \
     libasound2-dev \
