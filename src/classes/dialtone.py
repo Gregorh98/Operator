@@ -6,18 +6,32 @@ class DialTone:
         self._sr_tone = 48000
         self._phase_350 = 0
         self._phase_450 = 0
+        self._enabled = True
 
         self._dial_tone_stream = sounddevice.OutputStream(
             samplerate=self._sr_tone,
             channels=1,
             dtype="float32",
+            blocksize=1024,
             latency="high",
             callback=self._dial_tone_callback
         )
 
+        self._dial_tone_stream.start()
+
+    def start(self):
+        self._enabled = True
+
+    def stop(self):
+        self._enabled = False
+
     def _dial_tone_callback(self, outdata, frames, time, status):
-        if status:
-            print(status)
+        if status.output_underflow:
+            print("underflow")
+
+        if not self._enabled:
+            outdata.fill(0)
+            return
 
         sr = self._sr_tone
 
@@ -33,12 +47,3 @@ class DialTone:
         # update phase safely
         self._phase_350 = (self._phase_350 + frames) % sr
         self._phase_450 = (self._phase_450 + frames) % sr
-
-    def start(self):
-        if not self._dial_tone_stream.active:
-            self._dial_tone_stream.start()
-
-    def stop(self):
-        if self._dial_tone_stream.active:
-            self._dial_tone_stream.stop()
-
