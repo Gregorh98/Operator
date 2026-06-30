@@ -18,6 +18,8 @@ class Recorder:
 
         self._on_finished = on_finished
 
+        self._lock = threading.Lock()
+
     @property
     def is_recording(self):
         return self._is_recording
@@ -37,29 +39,35 @@ class Recorder:
             self._frames.append(indata.copy())
 
         def _run():
-            with sd.InputStream(
-                samplerate=self._sample_frequency,
-                channels=1,
-                dtype="float32",
-                callback=callback,
-            ):
-                self._stop_event.wait(self._max_recording_duration)
-
-            self._stop()
+            try:
+                with sd.InputStream(
+                    samplerate=self._sample_frequency,
+                    channels=1,
+                    dtype="float32",
+                    callback=callback,
+                ):
+                    self._stop_event.wait(self._max_recording_duration)
+            finally:
+                self._stop()
 
         threading.Thread(target=_run, daemon=True).start()
 
     def stop_recording(self):
-        if not self._is_recording:
-            return
-        self._stop()
+        # Only signal stop; do NOT stop or save here
+        self._stop_event.set()
 
     def _stop(self):
-        self._stop_event.set()
-        self._is_recording = False
-        self._save_to_file()
-        if self._on_finished is not None:
-            self._on_finished()
+        with self._lock:
+            if not self._is_recording:
+                return
+
+            self._is_recording = False
+            self._stop_event.set()
+
+            self._save_to_file()
+
+            if self._on_finished is not None:
+                self._on_finished()
 
     def _save_to_file(self):
         print("Saving to file...")
@@ -72,4 +80,8 @@ class Recorder:
         timestamp = datetime.now(tz=UTC).isoformat().replace(":", "-")
 
         os.makedirs("/mnt/usb/recordings", exist_ok=True)
-        write(f"/mnt/usb/recordings/{timestamp}.wav", self._sample_frequency, audio)
+        write(
+            f"/mnt/usb/recordings/{timestamp}.wav",
+            self._sample_frequency,
+            audio
+        )
