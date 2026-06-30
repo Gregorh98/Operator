@@ -44,7 +44,7 @@ class Player:
                         break
 
                     # Wait 2 seconds between clips, but allow interruption
-                    if self._stop_event.wait(2):
+                    if self._stop_event.wait(1):
                         break
 
             finally:

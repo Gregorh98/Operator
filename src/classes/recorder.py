@@ -57,6 +57,7 @@ class Recorder:
     def _stop(self):
         self._stop_event.set()
         self._is_recording = False
+        self._save_to_file()
         if self._on_finished is not None:
             self._on_finished()
 
