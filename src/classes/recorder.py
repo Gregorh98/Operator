@@ -1,3 +1,4 @@
+import os
 import threading
 import numpy as np
 import sounddevice as sd
@@ -62,4 +63,6 @@ class Recorder:
         audio = np.concatenate(self._frames, axis=0)
 
         timestamp = datetime.now(tz=UTC).isoformat().replace(":", "-")
+
+        os.makedirs("/mnt/usb/recordings", exist_ok=True)
         write(f"/mnt/usb/{timestamp}.wav", self._sample_frequency, audio)
