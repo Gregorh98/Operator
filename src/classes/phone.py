@@ -21,8 +21,8 @@ class Phone:
             self._dialtone.start()
 
         # Recorder
-        self._recorder = Recorder(on_finished=self._dialtone.start())
-        self._player = Player(on_finished=self._dialtone.start())
+        self._recorder = Recorder(on_finished=self._dialtone.start)
+        self._player = Player(on_finished=self._dialtone.start)
 
         # Startup Event
         self._ringer.ring_sequence()
