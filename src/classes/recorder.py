@@ -1,7 +1,8 @@
-from datetime import datetime, UTC
 import threading
+import numpy as np
 import sounddevice as sd
 from scipy.io.wavfile import write
+from datetime import datetime, UTC
 
 
 class Recorder:
@@ -11,57 +12,54 @@ class Recorder:
 
         self._is_recording = False
         self._stop_event = threading.Event()
-        self._recording = None
-        self._thread = None
+        self._stream = None
+        self._frames = []
 
     @property
     def is_recording(self):
         return self._is_recording
 
     def start_recording(self):
-        print("Recording...")
         if self._is_recording:
             return
 
-        self._is_recording = True
+        print("Recording...")
+        self._frames = []
         self._stop_event.clear()
+        self._is_recording = True
+
+        def callback(indata, frames, time, status):
+            if self._stop_event.is_set():
+                raise sd.CallbackStop()
+            self._frames.append(indata.copy())
 
         def _run():
-            self._recording = sd.rec(
-                int(self._max_recording_duration * self._sample_frequency),
+            with sd.InputStream(
                 samplerate=self._sample_frequency,
                 channels=1,
                 dtype="float32",
-            )
-
-            # timer thread: stops after max duration unless already stopped
-            timer = threading.Timer(self._max_recording_duration, self.stop_recording)
-            timer.start()
-
-            sd.wait()  # blocks until stopped
-
-            timer.cancel()
-
-            if self._recording is not None:
-                self._save_to_file(self._recording)
+                callback=callback,
+            ):
+                self._stop_event.wait(self._max_recording_duration)
 
             self._is_recording = False
+            self._save_to_file()
 
-        self._thread = threading.Thread(target=_run)
-        self._thread.start()
+        threading.Thread(target=_run, daemon=True).start()
 
     def stop_recording(self):
         if not self._is_recording:
             return
-
-        if self._recording is not None:
-            self._save_to_file(self._recording)
+        self._stop_event.set()
         self._is_recording = False
 
-        self._stop_event.set()
-        sd.stop()  # interrupts sd.rec + sd.wait
-
-    def _save_to_file(self, recording):
+    def _save_to_file(self):
         print("Saving to file...")
+
+        if not self._frames:
+            return
+
+        audio = np.concatenate(self._frames, axis=0)
+
         timestamp = datetime.now(tz=UTC).isoformat().replace(":", "-")
-        write(f"/mnt/usb/{timestamp}.wav", self._sample_frequency, recording)
+        write(f"/mnt/usb/{timestamp}.wav", self._sample_frequency, audio)
