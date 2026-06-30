@@ -54,6 +54,5 @@ class Phone:
                 return
             case 0:
                 self._ringer.ring_sequence()
+                self._dialtone.start()
                 return
-
-        self._dialtone.start()
