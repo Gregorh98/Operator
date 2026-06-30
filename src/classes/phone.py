@@ -21,8 +21,8 @@ class Phone:
             self._dialtone.start()
 
         # Recorder
-        self._recorder = Recorder()
-        self._player = Player()
+        self._recorder = Recorder(on_finished=self._dialtone.start())
+        self._player = Player(on_finished=self._dialtone.start())
 
         # Startup Event
         self._ringer.ring_sequence()
@@ -43,11 +43,9 @@ class Phone:
         match number:
             case 1:
                 self._recorder.start_recording()
-                self._dialtone.start()
                 return
             case 2:
                 self._player.play_all_recordings()
-                self._dialtone.start()
                 return
             case 3:
                 return

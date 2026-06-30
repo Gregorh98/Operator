@@ -7,11 +7,13 @@ from scipy.io.wavfile import read
 
 
 class Player:
-    def __init__(self, recordings_directory="/mnt/usb/recordings"):
+    def __init__(self, recordings_directory="/mnt/usb/recordings", on_finished=None):
         self._recordings_directory = recordings_directory
         self._stop_event = threading.Event()
         self._thread = None
         self._is_playing = False
+
+        self._on_finished = on_finished
 
     @property
     def is_playing(self):
@@ -47,6 +49,8 @@ class Player:
 
             finally:
                 self._is_playing = False
+                if  self._on_finished is not None:
+                    self._on_finished()
 
         self._thread = threading.Thread(target=_run)
         self._thread.start()

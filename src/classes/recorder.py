@@ -7,7 +7,7 @@ from datetime import datetime, UTC
 
 
 class Recorder:
-    def __init__(self, sample_frequency=48000, max_recording_duration=30):
+    def __init__(self, sample_frequency=48000, max_recording_duration=30, on_finished=None):
         self._sample_frequency = sample_frequency
         self._max_recording_duration = max_recording_duration
 
@@ -15,6 +15,8 @@ class Recorder:
         self._stop_event = threading.Event()
         self._stream = None
         self._frames = []
+
+        self._on_finished = on_finished
 
     @property
     def is_recording(self):
@@ -43,16 +45,20 @@ class Recorder:
             ):
                 self._stop_event.wait(self._max_recording_duration)
 
-            self._is_recording = False
-            self._save_to_file()
+            self._stop()
 
         threading.Thread(target=_run, daemon=True).start()
 
     def stop_recording(self):
         if not self._is_recording:
             return
+        self._stop()
+
+    def _stop(self):
         self._stop_event.set()
         self._is_recording = False
+        if self._on_finished is not None:
+            self._on_finished()
 
     def _save_to_file(self):
         print("Saving to file...")
