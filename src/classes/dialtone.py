@@ -3,7 +3,7 @@ import numpy as np
 
 class DialTone:
     def __init__(self):
-        self._sr_tone = 8000
+        self._sr_tone = 48000
         self._phase_350 = 0
         self._phase_450 = 0
 
@@ -11,6 +11,7 @@ class DialTone:
             samplerate=self._sr_tone,
             channels=1,
             dtype="float32",
+            latency="high",
             callback=self._dial_tone_callback
         )
 
