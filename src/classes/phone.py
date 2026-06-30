@@ -17,6 +17,8 @@ class Phone:
         self._hook_switch.when_pressed = self._phone_placed
         self._hook_switch.when_released = self._phone_lifted
 
+        self._ringer.ring_sequence()
+
     def _phone_placed(self):
         print("Phone Placed")
         self._dialtone.stop()
