@@ -27,9 +27,15 @@ class Phone:
         # Startup Event
         self._ringer.ring_sequence()
 
+    def _on_recording_finished(self, stopped_by_user):
+        if stopped_by_user:
+            self._dialtone.stop()
+        else:
+            self._dialtone.start()
+
     def _phone_placed(self):
         print("Phone Placed")
-        self._recorder.stop_recording()
+        self._recorder.stop_recording(user_initiated=True)
         self._player.stop_playing()
         self._dialtone.stop()
 

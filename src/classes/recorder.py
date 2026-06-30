@@ -17,6 +17,7 @@ class Recorder:
         self._frames = []
 
         self._on_finished = on_finished
+        self._stopped_by_user = False
 
         self._lock = threading.Lock()
 
@@ -25,13 +26,15 @@ class Recorder:
         return self._is_recording
 
     def start_recording(self):
-        if self._is_recording:
-            return
+        with self._lock:
+            if self._is_recording:
+                return
 
-        print("Recording...")
-        self._frames = []
-        self._stop_event.clear()
-        self._is_recording = True
+            print("Recording...")
+            self._frames = []
+            self._stop_event.clear()
+            self._stopped_by_user = False
+            self._is_recording = True
 
         def callback(indata, frames, time, status):
             if self._stop_event.is_set():
@@ -41,10 +44,10 @@ class Recorder:
         def _run():
             try:
                 with sd.InputStream(
-                    samplerate=self._sample_frequency,
-                    channels=1,
-                    dtype="float32",
-                    callback=callback,
+                        samplerate=self._sample_frequency,
+                        channels=1,
+                        dtype="float32",
+                        callback=callback,
                 ):
                     self._stop_event.wait(self._max_recording_duration)
             finally:
@@ -52,8 +55,8 @@ class Recorder:
 
         threading.Thread(target=_run, daemon=True).start()
 
-    def stop_recording(self):
-        # Only signal stop; do NOT stop or save here
+    def stop_recording(self, user_initiated=False):
+        self._stopped_by_user = user_initiated
         self._stop_event.set()
 
     def _stop(self):
@@ -62,12 +65,14 @@ class Recorder:
                 return
 
             self._is_recording = False
-            self._stop_event.set()
 
-            self._save_to_file()
+            # snapshot reason safely (prevents race overwrite issues)
+            reason = self._stopped_by_user
 
-            if self._on_finished is not None:
-                self._on_finished()
+        self._save_to_file()
+
+        if self._on_finished:
+            self._on_finished(reason)
 
     def _save_to_file(self):
         print("Saving to file...")
