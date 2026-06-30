@@ -28,6 +28,8 @@ class Phone:
 
     def _phone_placed(self):
         print("Phone Placed")
+        if(self._recorder.is_recording):
+            self._recorder.stop_recording()
         self._dialtone.stop()
 
     def _phone_lifted(self):

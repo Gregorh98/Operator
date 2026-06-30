@@ -14,6 +14,10 @@ class Recorder:
         self._recording = None
         self._thread = None
 
+    @property
+    def is_recording(self):
+        return self._is_recording
+
     def start_recording(self):
         print("Recording...")
         if self._is_recording:
@@ -54,5 +58,6 @@ class Recorder:
         sd.stop()  # interrupts sd.rec + sd.wait
 
     def _save_to_file(self, recording):
+        print("Saving to file...")
         timestamp = datetime.now(tz=UTC).isoformat().replace(":", "-")
         write(f"/mnt/usb/{timestamp}.wav", self._sample_frequency, recording)
