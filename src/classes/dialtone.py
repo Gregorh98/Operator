@@ -2,8 +2,9 @@ import sounddevice
 import numpy as np
 
 class DialTone:
-    def __init__(self):
-        self._sr_tone = 48000
+    def __init__(self, sample_frequency=48000):
+        self._sr_tone = sample_frequency
+
         self._phase_350 = 0
         self._phase_450 = 0
         self._enabled = True

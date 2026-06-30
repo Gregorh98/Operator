@@ -1,6 +1,6 @@
 from gpiozero import Button
 
-from classes import Ringer, Dial, DialTone
+from classes import Ringer, Dial, DialTone, Recorder
 
 
 class Phone:
@@ -20,6 +20,10 @@ class Phone:
         if not self._hook_switch.is_pressed:
             self._dialtone.start()
 
+        # Recorder
+        self._recorder = Recorder()
+
+        # Startup Event
         self._ringer.ring_sequence()
 
     def _phone_placed(self):
@@ -35,6 +39,8 @@ class Phone:
 
         match number:
             case 1:
+                self._recorder.start_recording()
+                self._dialtone.start()
                 return
             case 2:
                 return
