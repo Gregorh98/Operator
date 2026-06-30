@@ -65,4 +65,4 @@ class Recorder:
         timestamp = datetime.now(tz=UTC).isoformat().replace(":", "-")
 
         os.makedirs("/mnt/usb/recordings", exist_ok=True)
-        write(f"/mnt/usb/{timestamp}.wav", self._sample_frequency, audio)
+        write(f"/mnt/usb/recordings/{timestamp}.wav", self._sample_frequency, audio)

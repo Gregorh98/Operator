@@ -1,6 +1,6 @@
 from gpiozero import Button
 
-from classes import Ringer, Dial, DialTone, Recorder
+from classes import Ringer, Dial, DialTone, Recorder, Player
 
 
 class Phone:
@@ -22,14 +22,15 @@ class Phone:
 
         # Recorder
         self._recorder = Recorder()
+        self._player = Player()
 
         # Startup Event
         self._ringer.ring_sequence()
 
     def _phone_placed(self):
         print("Phone Placed")
-        if(self._recorder.is_recording):
-            self._recorder.stop_recording()
+        self._recorder.stop_recording()
+        self._player.stop_playing()
         self._dialtone.stop()
 
     def _phone_lifted(self):
@@ -45,6 +46,8 @@ class Phone:
                 self._dialtone.start()
                 return
             case 2:
+                self._player.play_all_recordings()
+                self._dialtone.start()
                 return
             case 3:
                 return
