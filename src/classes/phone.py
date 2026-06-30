@@ -1,16 +1,14 @@
-import json
-
-import numpy as np
-import sounddevice
 from gpiozero import Button
 
-from classes import Ringer, Dial
+from classes import Ringer, Dial, DialTone
+
 
 class Phone:
     def __init__(self, hook_switch_pin, ringer_coil_pos_pin, ringer_coil_neg_pin, dial_enable_pin, dial_pulse_pin):
         # Ringer and Dial
         self._ringer = Ringer(ringer_coil_pos_pin, ringer_coil_neg_pin)
         self._dial = Dial(dial_enable_pin, dial_pulse_pin, self._on_number_dialed)
+        self._dialtone = DialTone()
 
         # Hook Switch
         self._hook_switch_pin = hook_switch_pin
@@ -19,61 +17,18 @@ class Phone:
         self._hook_switch.when_pressed = self._phone_placed
         self._hook_switch.when_released = self._phone_lifted
 
-        # Dial Tone
-        self._sr_tone = 8000
-        self._phase_350 = 0
-        self._phase_450 = 0
-
-        self._dial_tone_stream = sounddevice.OutputStream(
-            samplerate=self._sr_tone,
-            channels=1,
-            dtype="float32",
-            callback=self._dial_tone_callback
-        )
-
-        if not self._hook_switch.is_pressed:
-            self._start_dial_tone()
-
-
-    def _dial_tone_callback(self, outdata, frames, time, status):
-        if status:
-            print(status)
-
-        sr = self._sr_tone
-
-        # generate sample indices once (fast)
-        t = np.arange(frames, dtype=np.float32)
-
-        # compute phase increments
-        phase_350 = (self._phase_350 + t) * 2 * np.pi * 350 / sr
-        phase_450 = (self._phase_450 + t) * 2 * np.pi * 450 / sr
-
-        outdata[:, 0] = 0.25 * (np.sin(phase_350) + np.sin(phase_450))
-
-        # update phase safely
-        self._phase_350 = (self._phase_350 + frames) % sr
-        self._phase_450 = (self._phase_450 + frames) % sr
-
-    def _start_dial_tone(self):
-        if not self._dial_tone_stream.active:
-            self._dial_tone_stream.start()
-
-    def _stop_dial_tone(self):
-        if self._dial_tone_stream.active:
-            self._dial_tone_stream.stop()
-
     def _phone_placed(self):
         print("Phone Placed")
-        self._stop_dial_tone()
+        self._dialtone.stop()
 
     def _phone_lifted(self):
         print("Phone Lifted")
-        self._start_dial_tone()
+        self._dialtone.start()
 
     def _on_number_dialed(self, number):
-        self._stop_dial_tone()
+        self._dialtone.stop()
 
-        match(number):
+        match number:
             case 1:
                 return
             case 2:
@@ -96,8 +51,4 @@ class Phone:
                 self._ringer.ring_sequence()
                 return
 
-        self._start_dial_tone()
-
-    def ring(self, count=1):
-        for _ in range(count):
-            self._ringer.ring_sequence()
+        self._dialtone.start()
