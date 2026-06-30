@@ -7,6 +7,8 @@ class DialTone:
         self._phase_350 = 0
         self._phase_450 = 0
         self._enabled = True
+        self._inc350 = 2 * np.pi * 350 / self._sr_tone
+        self._inc450 = 2 * np.pi * 450 / self._sr_tone
 
         self._dial_tone_stream = sounddevice.OutputStream(
             samplerate=self._sr_tone,
@@ -33,17 +35,12 @@ class DialTone:
             outdata.fill(0)
             return
 
-        sr = self._sr_tone
-
-        # generate sample indices once (fast)
         t = np.arange(frames, dtype=np.float32)
 
-        # compute phase increments
-        phase_350 = (self._phase_350 + t) * 2 * np.pi * 350 / sr
-        phase_450 = (self._phase_450 + t) * 2 * np.pi * 450 / sr
+        phase_350 = self._phase_350 + self._inc350 * t
+        phase_450 = self._phase_450 + self._inc450 * t
 
         outdata[:, 0] = 0.25 * (np.sin(phase_350) + np.sin(phase_450))
 
-        # update phase safely
-        self._phase_350 = (self._phase_350 + frames) % sr
-        self._phase_450 = (self._phase_450 + frames) % sr
+        self._phase_350 = phase_350[-1] + self._inc350
+        self._phase_450 = phase_450[-1] + self._inc450
