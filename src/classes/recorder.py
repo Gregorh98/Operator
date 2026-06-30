@@ -55,4 +55,4 @@ class Recorder:
 
     def _save_to_file(self, recording):
         timestamp = datetime.now(tz=UTC).isoformat().replace(":", "-")
-        write(f"{timestamp}.wav", self._sample_frequency, recording)
+        write(f"/mnt/usb/{timestamp}.wav", self._sample_frequency, recording)
