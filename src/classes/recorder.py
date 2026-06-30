@@ -54,6 +54,9 @@ class Recorder:
         if not self._is_recording:
             return
 
+        if self._recording is not None:
+            self._save_to_file(self._recording)
+
         self._stop_event.set()
         sd.stop()  # interrupts sd.rec + sd.wait
 
