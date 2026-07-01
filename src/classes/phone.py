@@ -48,6 +48,8 @@ class Phone:
                 self._player.play_all_recordings()
                 return
             case 3:
+                self._ringer.ring_sequence()
+                self._dialtone.start()
                 return
             case 4:
                 return
@@ -62,6 +64,6 @@ class Phone:
             case 9:
                 return
             case 0:
-                self._ringer.ring_sequence()
+                self._player.play_file("operator.wav")
                 self._dialtone.start()
                 return

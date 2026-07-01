@@ -55,8 +55,8 @@ class Player:
         self._thread = threading.Thread(target=_run)
         self._thread.start()
 
-    def _play_file(self, file_name):
-        sample_rate, audio = read(file_name)
+    def _play_file(self, file_path):
+        sample_rate, audio = read(file_path)
 
         sd.play(audio, sample_rate)
 
@@ -65,6 +65,10 @@ class Player:
             if self._stop_event.wait(0.1):
                 sd.stop()
                 break
+
+    def play_file(self, file_name):
+        path = "/mnt/usb/audio/" + file_name
+        self._play_file(path)
 
     def stop_playing(self):
         if not self._is_playing:
