@@ -1,6 +1,6 @@
 from signal import pause
 
-from classes import Phone
+from physical_abstractions import Phone
 
 HOOK_SWITCH_PIN = 12
 RINGER_COIL_POS_PIN = 19
