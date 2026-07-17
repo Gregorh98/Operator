@@ -42,5 +42,5 @@ class DialTone:
 
         outdata[:, 0] = 0.25 * (np.sin(phase_350) + np.sin(phase_450))
 
-        self._phase_350 = phase_350[-1] + self._inc350
-        self._phase_450 = phase_450[-1] + self._inc450
+        self._phase_350 = (self._phase_350 + self._inc350 * frames) % (2 * np.pi)
+        self._phase_450 = (self._phase_450 + self._inc450 * frames) % (2 * np.pi)
