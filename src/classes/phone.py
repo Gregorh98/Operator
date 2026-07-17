@@ -47,9 +47,9 @@ class Phone:
             case 2:
                 self._player.play_all_recordings()
                 return
-            case 9:
-                self._ringer.ring_sequence()
             case 0:
                 self._player.play_file("operator.wav")
+            case _:
+                self._ringer.ring_sequence()
 
         self._dialtone.start()
