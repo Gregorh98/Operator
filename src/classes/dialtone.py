@@ -15,7 +15,6 @@ class DialTone:
             samplerate=self._sr_tone,
             channels=1,
             dtype="float32",
-            blocksize=1024,
             latency="high",
             callback=self._dial_tone_callback
         )
